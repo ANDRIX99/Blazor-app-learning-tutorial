@@ -1,0 +1,55 @@
+﻿@page "/weather"
+@inject HttpClient Http
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date</td>
+                    <td>@forecast.temperature_2m</td>
+                    <td>@forecast.TemperatureF</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/prop.json");
+        //HttpClient client = new HttpClient();
+        //forecasts = await client.PostAsJsonAsync<WeatherForecast[]>(client, "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m", WeatherForecast[]);
+    }
+
+    public class WeatherForecast
+    {
+        public string? Date { get; set; }
+
+        public float temperature_2m { get; set; }
+
+        public int TemperatureF => 32 + (int)(temperature_2m / 0.5556);
+    }
+}
